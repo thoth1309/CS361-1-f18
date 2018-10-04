@@ -12,14 +12,7 @@ public abstract class State {
 	 * getter for the string label
 	 * @return returns the state label.
 	 */
-	public String getName(){
-		return name;
-	}
-	
-	@Override
 	public String toString(){
 		return name;
-	}
-	
-	
+	}	
 }

@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * January 19, 2017
  * The class reads the input file and instantiates a DFA from it.
  * Next it reads a string from the same file and prints "yes" if the string 
- * is in the DFA's language or "not if the string is not in the DFA's language.
+ * is in the DFA's language or "no" if the string is not in the DFA's language.
  * @author elenasherman
  *
  */
@@ -50,6 +50,7 @@ public class DFADriver {
 			}
 
 			//read in the transactions
+			// this is where we get our alphabet
 			String trans = scan.nextLine();
 			tk = new StringTokenizer(trans, " ");
 			while(tk.hasMoreTokens()){

@@ -1,0 +1,18 @@
+1 2
+0
+3 4 5
+0a1 0b2 1a3 1b4 2a3 2b5 3a1 3b2 4a1 4b5 5a5 5b5
+e
+a
+ab
+ababab
+b
+abababa
+abbaababababbbaaababababbbaababb
+abb
+bba
+baababababa
+ababab
+aaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaab
+
