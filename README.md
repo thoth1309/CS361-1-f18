@@ -7,7 +7,7 @@
 ### **Overview**
 --------------------------------------------------------------------------------
 This project implements a Java program in order to model a Deterministic Finite 
-Automaton. It utilizes packages, the collections package (primarily for data
+Automata. It utilizes packages, the collections package (primarily for data
 structures), and a set of provided interfaces and abstract classes in order to
 execute the model.
 
@@ -27,8 +27,6 @@ $java fa.dfa.DFADriver [TestFile]
 where TestFile is the location/name of the input file to be tested. The program
 will parse the input file, and return the results to the console for user
 examination.
-
-
 
 ### **Testing**
 --------------------------------------------------------------------------------
