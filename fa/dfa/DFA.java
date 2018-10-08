@@ -29,11 +29,11 @@ import java.util.Set;
  */
 public class DFA implements DFAInterface, FAInterface {
 
-	private LinkedHashSet<DFAState> Q;		// set of DFA states
+	private LinkedHashSet<DFAState> Q;			// set of DFA states
 	private LinkedHashSet<Character> sigma;		// alphabet for DFA
 	private HashMap<String, DFAState> delta;	// map of all transitions for DFA
-	private DFAState q0;				// start state for the DFA
-	private LinkedHashSet<DFAState> F;		// Set of final states for the DFA
+	private DFAState q0;						// start state for the DFA
+	private LinkedHashSet<DFAState> F;			// Set of final states for the DFA
 
 	/**
 	 * Constructor for DFA object, initializes and creates the
