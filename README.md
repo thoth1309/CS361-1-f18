@@ -13,6 +13,22 @@ execute the model.
 
 ### **Compiling and Using**
 --------------------------------------------------------------------------------
+In order to compile and use this program enter the following command on the
+command line:
+
+```
+$javac ./fa/dfa/DFADriver.java
+```
+In order to run this program, enter the following command on the command line:
+
+```
+$java fa.dfa.DFADriver [TestFile]
+```
+where TestFile is the location/name of the input file to be tested. The program
+will parse the input file, and return the results to the console for user
+examination.
+
+
 
 ### **Testing**
 --------------------------------------------------------------------------------
