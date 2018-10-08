@@ -6,7 +6,7 @@
 
 ### **Overview**
 --------------------------------------------------------------------------------
-This project implements a Java program in order to model a Deterministic Finite 
+This project implements a Java program in order to model Deterministic Finite 
 Automata. It utilizes packages, the collections package (primarily for data
 structures), and a set of provided interfaces and abstract classes in order to
 execute the model.
