@@ -1,0 +1,14 @@
+JC = javac
+.SUFFIXES: .java .class
+.java.class:
+	$(JC) $*.java
+
+CLASSES = \
+	  fa\dfa\DFADriver.java \
+
+default: classes
+
+classes: $(CLASSES:.java=.class)
+
+clean:
+	rm fa\*.class 
