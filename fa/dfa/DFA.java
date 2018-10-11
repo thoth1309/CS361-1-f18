@@ -37,7 +37,8 @@ public class DFA implements DFAInterface, FAInterface {
 
 	/**
 	 * Constructor for DFA object, initializes and creates the
-	 * 5-tuple for the desired automata
+	 * 5-tuple for the desired automata, readying the construction of
+	 * the automata when further information is acquired.
 	 * 
 	 */
 	public DFA() {
@@ -179,9 +180,10 @@ public class DFA implements DFAInterface, FAInterface {
 	}
 
 	/**
-	 * Creates a string from the set of states Q
+	 * Creates a string from the set of states in Q,
+	 * in order to modularly build a string.
 	 * 
-	 * @return retStates
+	 * @return retStates - the string containing the list of states in set Q
 	 */
 	private String getQ() {
 		// initial string info to get started
@@ -199,9 +201,10 @@ public class DFA implements DFAInterface, FAInterface {
 	}
 
 	/**
-	 * Creates a string from the set of alphabet characters Sigma
+	 * Creates a string from the set of alphabet characters, Sigma, in
+	 * order to modularly construct a string to return to the user.
 	 * 
-	 * @return retAlphabet
+	 * @return retAlphabet - the bracketed list of characters in the alphabet
 	 */
 	private String getSigma() {
 		// initial string info
@@ -219,9 +222,10 @@ public class DFA implements DFAInterface, FAInterface {
 	}
 
 	/**
-	 * Creates a string table from the hashmap of transitions delta
+	 * Creates a string table from the hashmap of transitions, delta, in
+	 * order to modularly construct a string to return to the user
 	 * 
-	 * @return retDeltaTable
+	 * @return retDeltaTable - a table containing all of the transitions in the FA
 	 */
 	private String getDelta() {
 		// important start and formatting infor for string
@@ -254,18 +258,20 @@ public class DFA implements DFAInterface, FAInterface {
 	}
 
 	/**
-	 * Creates a string from the start state q0
+	 * Creates a string from the start state, q0, in order to more
+	 * modularly construct a string to return to the user.
 	 * 
-	 * @return q0 as a ready to print string
+	 * @return q0 - as a string consisting of the state name
 	 */
 	private String getQ0() {
 		return "q0 = " + q0.toString() + "\n";
 	}
 
 	/**
-	 * Creates a string from the set of final states F
+	 * Creates a string from the set of final states, F, in order to
+	 * more modularly construct a string to return to the user.
 	 * 
-	 * @return retFinalStates
+	 * @return retFinalStates - the bracketed set of final states for the FA
 	 */
 	private String getF() {
 		// Initial string setup

@@ -13,9 +13,10 @@ public class DFAState extends State{
 	private String name;	// the name of the state
 	
 	/**
-	 * Creates an FA state, with a name
+	 * Creates a Finite Automata state, which must include a unique
+	 * name.
 	 * 
-	 * @param name
+	 * @param name - the name of the state
 	 */
 	public DFAState(String name ) {
 		this.name = name;
