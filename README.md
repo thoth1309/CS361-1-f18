@@ -35,7 +35,7 @@ Line 1: Names of final states separated by whitespace.
 Line 2: Name of the start state.
 Line 3: Names of states not in the previous two lines, separated by whitespace.
 Line 4: Three character substrings representing transitions separated by white space.
-ine(s) 5+: The strings (one per line) to be processed by the DFA to determine if it 
+Line(s) 5+: The strings (one per line) to be processed by the DFA to determine if it 
 	    is in the language.
 ```
 Formatting for Line 4 is as follows: 
