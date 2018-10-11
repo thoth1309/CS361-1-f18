@@ -84,4 +84,4 @@ No opportunity for extra credit provided.
 
 ## Sources Used
 
-- Java Collections API Documentation: (https://docs.oracle.com/javase/8/docs/technotes/guides/collections/reference.html)[https://docs.oracle.com/javase/8/docs/technotes/guides/collections/reference.html]
+- [Java Collections API Documentation:](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/reference.html) "https://docs.oracle.com/javase/8/docs/technotes/guides/collections/reference.html"
