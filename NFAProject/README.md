@@ -23,7 +23,7 @@ In order to compile this program, run the following command from within the top
 directory:
 
 ```
-$javac ./fa/dfa/NFADriver.java
+$javac ./fa/nfa/NFADriver.java
 ```
 In order to run this program, enter the following command on the command line:
 
