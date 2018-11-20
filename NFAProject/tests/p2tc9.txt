@@ -1,0 +1,23 @@
+f
+s
+1 2 3 4 5 6 7 8 9 u v w x y z
+sa1 se4 1a2 1b6 2a3 2b7 3a1 3b5 3e8 3ef 4b5 4e8 5b6 6b7 7b5 7e8 7ef 8c9 8ew 9cu 9dy ucv udz vc9 vdx vef wdx wef xdy ydz zdx zef
+b
+a
+ab
+aab
+abb
+aaabbb
+c
+d
+cd
+cdd
+ccd
+cccddd
+cccdd
+aabbb
+e
+aaabbbc
+abbccd
+aabbccd
+aaabbbcccddd

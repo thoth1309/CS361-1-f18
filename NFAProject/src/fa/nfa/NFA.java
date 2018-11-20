@@ -34,11 +34,11 @@ public class NFA implements NFAInterface, fa.FAInterface{
      */
     public NFA() {
         // Construct NFA
-        this.F = new LinkedHashSet<NFAState>();
+        this.F = new LinkedHashSet<>();
         this.q0 = null;
-        this.Q = new LinkedHashSet<NFAState>();
-        this.sigma = new LinkedHashSet<Character>();
-        this.delta = new HashMap<String, Set<NFAState>>();
+        this.Q = new LinkedHashSet<>();
+        this.sigma = new LinkedHashSet<>();
+        this.delta = new HashMap<>();
 
     }
 
@@ -144,8 +144,7 @@ public class NFA implements NFAInterface, fa.FAInterface{
         LinkedHashSet<DFAState> dfaQ = new LinkedHashSet<>();
 
         // sets up the dead state, so it's easier to find later
-        DFAState deadState = getFromSet(qPrime, "");
-        dfaQ.add(deadState);
+        DFAState deadState = getFromSet(qPrime, "[]");
 
         // add all transitions for every state in qPrime
         addDFATransitions(qPrime);
@@ -156,22 +155,14 @@ public class NFA implements NFAInterface, fa.FAInterface{
 
         // takes the set of states in closure, and turns the name into a
         // string to be used to create the DFA start state later.
-        String startStateName = "";
-        for(NFAState state: closure){
-            startStateName = startStateName + state.getName();
-        }
-
-        // sort the string naturally so the states are named appropriately
-        char[] chars = startStateName.toCharArray();
-        Arrays.sort(chars);
-        String sorted = new String(chars);
+        String startStateName = createStateName(closure);
 
         // finds the start state in qPrime
-        DFAState dfaStart = getFromSet(qPrime, sorted);
+        DFAState dfaStart = getFromSet(qPrime, startStateName);
 
         // queue to search through and find all valid states from start to finish
         Queue<DFAState> searchQueue = new LinkedList<>();
-        HashSet<DFAState> searched = new HashSet<>();
+        Set<DFAState> searched = new LinkedHashSet<>();
 
         // plug the start state into a queue for searching, and a queue for keeping track of it
         searchQueue.add(dfaStart);
@@ -197,24 +188,20 @@ public class NFA implements NFAInterface, fa.FAInterface{
                     dfaQ.add(nextState);
                     searched.add(nextState);
                 } else {
+                    dfaQ.add(deadState);
                     tmpState.addTransition(element, deadState);
                 }
             }
 
             // if dfaQ doesn't already have our current state, add it to the list
-            if (!dfaQ.contains(tmpState)){
-                dfaQ.add(tmpState);
-            }
+            dfaQ.add(tmpState);
 
             // for every state in the list of final states, check to see if the name
             // of our temporary state has that character. If so, add it to the list
             // of final states and set it as final.
             for(NFAState finalState: F) {
                 if (tmpState.getName().contains(finalState.getName())) {
-                    tmpState.isFinal();
-                    if(!finalStates.contains(tmpState)) {
-                        finalStates.add(tmpState);
-                    }
+                    finalStates.add(tmpState);
                     break;  // we found a final state, we don't need to keep looking
                 }
             }
@@ -277,27 +264,24 @@ public class NFA implements NFAInterface, fa.FAInterface{
 
         // set of states we can get to from s for free
         Set<NFAState> stateSet = delta.get(s.getName() + EMPTYSTRING);
-        HashSet<NFAState> stateTracker = new HashSet<>();
 
         // add all states from stateSet to the queue so we can add them
         // to the closure, and check to see if we can go anywhere from
         // them for free
         if(stateSet != null) {
-            for (NFAState tmpState : stateSet) {
-                closureQueue.add(tmpState);
-                stateTracker.add(tmpState);
-            }
+            closureQueue.addAll(stateSet);
+//            for (NFAState tmpState : stateSet) {
+//                closureQueue.add(tmpState);
+//            }
         }
 
         // creates a copy of the closure
         Queue<NFAState> closureCopy = new LinkedList<>();
 
-        for(NFAState element: closureQueue){
-            closureCopy.add(element);
-        }
+        closureCopy.addAll(closureQueue);
 
         Set<NFAState> copySet;
-        HashSet<NFAState> tracker = new HashSet<>();
+        Set<NFAState> tracker = new LinkedHashSet<>();
 
         // looks for empty transitions from each of the elements in closurecopy,
         // and adds them to the closure queue
@@ -320,9 +304,7 @@ public class NFA implements NFAInterface, fa.FAInterface{
         }
 
         // add all elements in closureQueue to the closure
-        for(NFAState element : closureQueue){
-            closure.add(element);
-        }
+        closure.addAll(closureQueue);
 
         return closure;
     }
@@ -358,17 +340,34 @@ public class NFA implements NFAInterface, fa.FAInterface{
      * @return the string representing the new state name
      */
     private String createStateName(Set<NFAState> states) {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();    // old state names
+        StringBuilder name = new StringBuilder();   // name of new state
 
+        // collect the names of the states we're combining
         for (NFAState state: states) {
             builder.append(state.toString());
         }
 
-        // sorts the array naturally, before returning it to a string
+        // sorts the characters in the name naturally, before building the name
         char[] chars = builder.toString().toCharArray();
         Arrays.sort(chars);
-        String sorted = new String(chars);
-        return sorted;
+
+        // build the actual name we're going to give to the DFA state
+        name.append("[");
+
+        for(char letter: chars){
+            name.append(letter);
+            name.append(", ");
+        }
+
+        // delete extra characters, if there are any.
+        if(name.length() > 1){
+            name.delete(name.length()-2, name.length());
+        }
+
+        name.append("]");
+
+        return name.toString();
     }
 
 
@@ -397,13 +396,13 @@ public class NFA implements NFAInterface, fa.FAInterface{
         final int SET_LENGTH = 1 << element.length;
 
         // Create a set of sets to store the powerset data in
-        Set<Set<NFAState>> powerSet = new HashSet<>();
+        Set<Set<NFAState>> powerSet = new LinkedHashSet<>();
 
         // cycle through the sets, masking bits to get the
         // elements in the array element that we want, and place
         // them in our powerset, until we have the complete powerset
         for(int binarySet = 0; binarySet < SET_LENGTH; binarySet++){
-            Set<NFAState> subset = new HashSet<>();
+            Set<NFAState> subset = new LinkedHashSet<>();
             for(int bit = 0; bit < element.length; bit++){
                 int mask = 1 << bit;
                 if((binarySet&mask) != 0){
@@ -413,22 +412,10 @@ public class NFA implements NFAInterface, fa.FAInterface{
             powerSet.add(subset);
         }
 
-        // cycle through the sets in the powerset
-        for(Set<NFAState> set: powerSet){
-            String stateName = "";
-
-            // take names of each NFAState in the set, and
-            // concatenate them together to create a new
-            // DFAState to add to qPrime
-            for(Object thing: set){
-                stateName = stateName + thing.toString();
-            }
-
-            char[] chars = stateName.toCharArray();
-            Arrays.sort(chars);
-            String sorted = new String(chars);
-
-            DFAState newState = new DFAState(sorted);
+        // cycle through the sets in the powerset to name our DFAStates states
+        for (Set<NFAState> set: powerSet) {
+            String stateName = createStateName(set);
+            DFAState newState = new DFAState(stateName);
             qPrime.add(newState);
         }
 
@@ -443,7 +430,6 @@ public class NFA implements NFAInterface, fa.FAInterface{
      * hashmap.
      *
      * @param qPrime - the set of states over which we will iterate
-     * @return the full set of all possible transitions for qPrime
      */
     private void addDFATransitions(LinkedHashSet<DFAState> qPrime) {
 
@@ -460,15 +446,9 @@ public class NFA implements NFAInterface, fa.FAInterface{
                 // get set that this char can transition to
                 Set<NFAState> states = symbolClosure(state, symbol);
                 DFAState dfaState;
-                StringBuilder string = new StringBuilder();
-                for(NFAState nfaState : states) {
-                    string.append(nfaState.getName());
-                }
-                char[] chars = string.toString().toCharArray();
-                Arrays.sort(chars);
-                String sorted = new String(chars);
+                String name = createStateName(states);
 
-                dfaState = getFromSet(qPrime, sorted);
+                dfaState = getFromSet(qPrime, name);
                 state.addTransition(symbol, dfaState);
             }
         }
@@ -490,16 +470,18 @@ public class NFA implements NFAInterface, fa.FAInterface{
         // parse name
         for(int i=0; i<dfaName.length(); i++) {
             // look up state in Q (NFA)
-            String nfaStateNameChar = "" + dfaName.charAt(i);
+            char tmp = dfaName.charAt(i);
+            if(tmp == '[' || tmp == ']' || tmp == ',' || tmp == ' '){
+                continue;
+            }
+            String nfaStateNameChar = "" + tmp;
             NFAState from = getStateInQ(nfaStateNameChar);
             Queue<NFAState> cycleQueue = new LinkedList<>();
 
             // get the eClosure of state, to search later. Add those states
             // to a search queue
             Set<NFAState> stateClosure = eClosure(from);
-            for (NFAState subState: stateClosure) {
-                cycleQueue.add(subState);
-            }
+            cycleQueue.addAll(stateClosure);
 
             // Get all transitions from every state in the eClosure of state, and figure out
             // where we can go on the symbol from each of those characters
@@ -509,22 +491,23 @@ public class NFA implements NFAInterface, fa.FAInterface{
                 if(transitions == null){
                     break;
                 }
-                for (NFAState toState: transitions) {
-                    nfaStates.add(toState);
+                nfaStates.addAll(transitions);
+            }
 
-                }
+            Set<NFAState> tmpSet = new LinkedHashSet<>();
+
+            for (NFAState tmpState: nfaStates) {
+                tmpSet.add(tmpState);
             }
 
             // For every state that we found on our transition, find the eclosure,
             // and add it to our list of nfaStates.
-            for (NFAState fromState: nfaStates) {
+            for (NFAState fromState: tmpSet) {
                 Set<NFAState> transitions = eClosure(fromState);
                 if(transitions == null){
                     break;
                 }
-                for (NFAState toState: transitions) {
-                    nfaStates.add(toState);
-                }
+                nfaStates.addAll(transitions);
             }
         }
 

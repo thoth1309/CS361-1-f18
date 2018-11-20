@@ -1,0 +1,10 @@
+0
+0
+
+0a0 0b0
+e
+ab
+ba
+abba
+aabb
+bbaa

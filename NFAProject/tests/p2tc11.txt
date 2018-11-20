@@ -1,0 +1,11 @@
+s
+s
+1 2
+sa1 sb1 ses se1 se2 1a2 1b2 1e1 1e2 1es 2as 2bs 2es 2e2 2e1
+e
+a
+b
+ab
+ba
+abba
+baab
