@@ -23,7 +23,7 @@ public class RE implements REInterface {
     @Override
     public NFA getNFA() {
         ArrayList<String> terms = new ArrayList();
-        // TODO: create a recursive decent (but not a parse tree)
+        // TODO: create a recursive descent (but not a parse tree)
         // TODO: that will allow you to find your states and transitions
         // TODO: you don't so much care about how you get to the states,
         // TODO: just THAT you get to them, and recognize them correctly.
