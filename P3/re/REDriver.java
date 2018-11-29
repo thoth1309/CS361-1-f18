@@ -33,6 +33,7 @@ public class REDriver {
 					String regEx = scan.nextLine().trim();
 					REInterface re = new RE(regEx);
 					NFA nfa = re.getNFA();
+
 					//now process the strings
 					DFA dfa = nfa.getDFA();
 					while(scan.hasNext()){
