@@ -1,0 +1,7 @@
+(a|e)b*
+b
+a
+ab
+abb
+aab
+e

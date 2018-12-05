@@ -1,0 +1,12 @@
+a*ba*
+a
+ab
+b
+ba
+aba
+aaabaaa
+abaaa
+bb
+aaaaabbaaa
+abaaba
+e

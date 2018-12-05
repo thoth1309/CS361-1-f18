@@ -1,0 +1,17 @@
+(a|b)*aba(a|b)*
+aba
+b
+a
+ab
+ba
+aaba
+aabaa
+baba
+babab
+aabab
+babaa
+ababbaba
+ababbab
+babbab
+abaaba
+e

@@ -1,0 +1,9 @@
+((a|b)*b(a|b)*b(a|b)*b)((a|b)*b(a|b)*b(a|b)*b)*
+e
+bbb
+bbbbbb
+bbbababab
+abababbbb
+abab
+babab
+bababb
