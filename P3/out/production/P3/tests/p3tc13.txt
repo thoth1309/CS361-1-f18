@@ -1,0 +1,8 @@
+(a|c)*b(a|c)*b(a|c)*b((a|c)*b(a|c)*b(a|c)*b)*
+e
+bbb
+bbbbbb
+bbbb
+abbbaacabcbb
+abbbaababcbbb
+abcbab

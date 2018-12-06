@@ -20,7 +20,7 @@ public class REDriver {
 
 	/**
 	 * @param args the file name
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		//The file name is passed as an argument
@@ -28,7 +28,7 @@ public class REDriver {
         // TODO: Every line marked with a TODO contains instructions to return
         // TODO: the file to its original state.
 				//String fileName = args[0];    // TODO: UNCOMMENT THIS LINE
-			for(int i = 1; i <= 11; i++) {  // TODO: DELETE THIS LINE
+			for(int i = 1; i <= 13; i++) {  // TODO: DELETE THIS LINE
 			    String fileName = "tests/p3tc" + i + ".txt";    // TODO: DELETE THIS LINE
                 File file = new File(fileName);
                 if (file.exists()) {
@@ -39,6 +39,7 @@ public class REDriver {
                     //the first line is the set of final states
                     //get the string of the final states and split it on a space
                     String regEx = scan.nextLine().trim();
+                    System.out.println(regEx + ":\n");  // TODO: Delete this line
                     REInterface re = new RE(regEx);
                     NFA nfa = re.getNFA();
 

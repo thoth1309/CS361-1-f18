@@ -7,6 +7,19 @@ import fa.nfa.NFAState;
 import java.util.Set;
 
 /**
+ * RE takes a String to parse as a Regular Expression. This class assumes that
+ * input will be in a correct format (i.e., a regular expression using '|' for
+ * or, '*' for star, '(' and ')' for grouping, and placing two characters next
+ * to each other to indicate concatenation. All other characters are assumed
+ * to be alphabet characters for the language.
+ *
+ * The input string will be parsed into an NFA which recognizes the language
+ * of the Regular Expression upon calling the method getNFA(). All other
+ * methods in the class are helper methods, and therefore are private to RE.
+ *
+ * This class implements the REInterface interface class.
+ *
+ * @author James Souder and Jason Egbert
  *
  */
 public class RE implements REInterface {

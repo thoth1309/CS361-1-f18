@@ -1,0 +1,6 @@
+abca(abca)*
+e
+abca
+abcaabca
+abcaab
+ab
