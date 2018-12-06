@@ -7,8 +7,8 @@ import fa.nfa.NFAState;
 import java.util.Set;
 
 public class RE implements REInterface {
-    private String regex;
-    private int stateNamer;
+    private String regex;   // the string to be used as a regular expression
+    private int stateNamer; // the integer to be used to name states uniquely
 
     /**
      * Constructor for the Regular Expression object. Takes in a string
