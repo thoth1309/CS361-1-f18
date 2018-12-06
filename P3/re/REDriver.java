@@ -33,9 +33,13 @@ public class REDriver {
 					String regEx = scan.nextLine().trim();
 					REInterface re = new RE(regEx);
 					NFA nfa = re.getNFA();
+					System.out.println(nfa.getStartState().toString());
+					System.out.println(nfa.getABC().toString());
+					System.out.println(nfa.toString());
 
 					//now process the strings
 					DFA dfa = nfa.getDFA();
+					System.out.println(dfa.toString());
 					while(scan.hasNext()){
 						boolean accept = dfa.accepts(scan.nextLine());
 						System.out.println(accept?"yes":"no");
