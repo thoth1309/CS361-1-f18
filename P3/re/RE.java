@@ -6,6 +6,9 @@ import fa.nfa.NFAState;
 
 import java.util.Set;
 
+/**
+ *
+ */
 public class RE implements REInterface {
     private String regex;   // the string to be used as a regular expression
     private int stateNamer; // the integer to be used to name states uniquely
@@ -32,6 +35,10 @@ public class RE implements REInterface {
     }
 
     /**
+     * Parses the regular expression into an NFA by first passing off the regex string
+     * to term to be parsed for terms, and then by checking for the or symbol.
+     * If the or symbol is present, a union is performed between the first NFA and the
+     * second NFA to create the return NFA.
      *
      * @return - an NFA based on a regular expression
      */
@@ -49,6 +56,9 @@ public class RE implements REInterface {
     }
 
     /**
+     * Parses the terms in the regular expression into an NFA by separating out the factors
+     * and passing them to the factor function. If the function has already created an NFA,
+     * then any new NFAs will be concatenated to it through the concatenation funciton.
      *
      * @return - an NFA based on a regex term
      */
@@ -74,6 +84,10 @@ public class RE implements REInterface {
     }
 
     /**
+     * Parses the factors of the regular expression into an NFA by separating out the
+     * bases and turning them into single character NFAs. After it's parsed a base, it
+     * checks for the * operator and if found it links the final states back to the start
+     * state via empty transitions.
      *
      * @return - an NFA built based on a regex factor
      */

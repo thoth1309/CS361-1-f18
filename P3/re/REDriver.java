@@ -24,26 +24,35 @@ public class REDriver {
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		//The file name is passed as an argument
-				String fileName = args[0];
-				File file = new File(fileName);
-				if(file.exists()){
-					Scanner scan = new Scanner(file);
-					//the first line is the set of final states
-					//get the string of the final states and split it on a space
-					String regEx = scan.nextLine().trim();
-					REInterface re = new RE(regEx);
-					NFA nfa = re.getNFA();
+        // TODO: Driver class has been modified to run multiple input files
+        // TODO: Every line marked with a TODO contains instructions to return
+        // TODO: the file to its original state.
+				//String fileName = args[0];    // TODO: UNCOMMENT THIS LINE
+			for(int i = 1; i <= 11; i++) {  // TODO: DELETE THIS LINE
+			    String fileName = "tests/p3tc" + i + ".txt";    // TODO: DELETE THIS LINE
+                File file = new File(fileName);
+                if (file.exists()) {
+                    if(i>1) System.out.println();   // TODO: Delete this line
 
-					//now process the strings
-					DFA dfa = nfa.getDFA();
-					while(scan.hasNext()){
-						boolean accept = dfa.accepts(scan.nextLine());
-						System.out.println(accept?"yes":"no");
-					}
-					scan.close();
-				} else {
-					System.out.println("Cannot find file " + fileName);
-				}
+                    System.out.println("********************\n" + fileName + "\n********************\n");    // TODO: DELETE THIS LINE
+                    Scanner scan = new Scanner(file);
+                    //the first line is the set of final states
+                    //get the string of the final states and split it on a space
+                    String regEx = scan.nextLine().trim();
+                    REInterface re = new RE(regEx);
+                    NFA nfa = re.getNFA();
+
+                    //now process the strings
+                    DFA dfa = nfa.getDFA();
+                    while (scan.hasNext()) {
+                        boolean accept = dfa.accepts(scan.nextLine());
+                        System.out.println(accept ? "yes" : "no");
+                    }
+                    scan.close();
+                } else {
+                    System.out.println("Cannot find file " + fileName);
+                }
+            }   // TODO: DELETE THIS LINE
 
 	}
 
