@@ -4,137 +4,45 @@ import fa.State;
 import fa.nfa.NFA;
 import fa.nfa.NFAState;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class RE implements REInterface {
-//    private NFA nfa;
     private String regex;
-    private Set<Character> sigma;
-    private Set<NFAState> delta;
     private int stateNamer;
-    private Set<String> transitions;
-    //private enum validChars {A, B, OR, STAR, OPEN, CLOSE;}
 
     /**
      * Constructor for the Regular Expression object. Takes in a string
      * representing a regular expression, and initializes all class
      * objects.
      *
-     * @param regex
+     * @param regex - the regular expression to be parsed
      */
     public RE(String regex){
-//        nfa = new NFA();    // Initialize our NFA
         this.regex = regex; // save the regular expression
-        sigma = new HashSet<>();
-        delta = new HashSet<>();
-        stateNamer = 0;
-        transitions = new LinkedHashSet<>();
+        stateNamer = 0; // a unique name generator for NFA states
     }
 
     @Override
     public NFA getNFA() {   // parse regex, turn it into NFA
-        NFA regNfa;
+        NFA nfa; // create an empty NFA
 
-        regNfa = regex();
+        nfa = regex();  // parse the regular expression into an NFA
 
-        return regNfa;
+        return nfa;
     }
 
     /**
      *
-     * @return
+     * @return - an NFA based on a regular expression
      */
     private NFA regex(){
-        //NFA nfa = new NFA();
-
-        NFA termNfa = parseTerm();
+        NFA termNfa = parseTerm();  // create an NFA from the next term
 
         if(more() && peek() == '|') {
-            eat ('|');
-            NFA subNfa = regex();
-            NFA newNfa = new NFA();
+            eat ('|');  // consume the or character
+            NFA secondNfa = regex();   // create an NFA from the next regex after the or
 
-            // TODO: take final states from termNfa, add to new NFA
-            Set<State> states = termNfa.getFinalStates();
-            for(State s : states) {
-                newNfa.addFinalState(s.getName());
-            }
-            // TODO: take final states from subNfa, add to new NFA
-            states = subNfa.getFinalStates();
-            for(State s : states) {
-                newNfa.addFinalState(s.getName());
-            }
-            // TODO: create a new Start State for the new NFA
-            NFAState startState = new NFAState(stateNamer++ + "");
-            newNfa.addStartState(startState.getName());
-            // TODO: add all states from termNfa to new NFA
-            states = termNfa.getStates();
-            for(State s : states){
-                newNfa.addState(s.getName());
-            }
-            // TODO: add all states from subNfa to new NFA
-            states = subNfa.getStates();
-            for(State s : states) {
-                newNfa.addState(s.getName());
-            }
-            // TODO: empty transition start of New to start of TermNfa AND start of subNfa
-            newNfa.addTransition(startState.getName(),'e', termNfa.getStartState().getName());
-            newNfa.addTransition(startState.getName(),'e', subNfa.getStartState().getName());
-            // TODO: add all transitions from termNfa to newNfa
-            states = termNfa.getStates();
-            for(State s : states) {
-                NFAState state = (NFAState)s;
-                for(char c : termNfa.getABC()){
-                    Set<NFAState> toStates = termNfa.getToState(state,c);
-                    for(NFAState n : toStates) {
-                        newNfa.addTransition(s.getName(), c, n.getName());
-                    }
-                }
-                Set<NFAState> toStates = termNfa.getToState(state, 'e');
-                for(NFAState n : toStates) {
-                    newNfa.addTransition(s.getName(), 'e', n.getName());
-                }
-            }
-
-            // TODO: add all transitions from subNfa to newNfa
-            states = subNfa.getStates();
-            for(State s : states) {
-                NFAState state = (NFAState)s;
-                for(char c : subNfa.getABC()){
-                    Set<NFAState> toStates = subNfa.getToState(state,c);
-                    for(NFAState n : toStates) {
-                        newNfa.addTransition(s.getName(), c, n.getName());
-                    }
-                }
-                Set<NFAState> toStates = subNfa.getToState(state, 'e');
-                for(NFAState n : toStates) {
-                    newNfa.addTransition(s.getName(), 'e', n.getName());
-                }
-            }
-
-            return newNfa;
-            /*
-            for(State s: termNfa.getFinalStates()){
-                nfa.addFinalState(s.getName());
-            }
-            for(State s: subNfa.getFinalStates()) {
-                nfa.addFinalState(s.getName());
-            }
-            nfa.addStartState(startState.getName());
-            for(State s: termNfa.getStates()){
-                nfa.addState(s.getName());
-
-            }
-            for(State s: subNfa.getStates()){
-                nfa.addState(s.getName());
-            }
-            nfa.addTransition(startState.getName(),'e',termNfa.getStartState().getName());
-            nfa.addTransition(startState.getName(),'e',subNfa.getStartState().getName());
-
-            return nfa;
-            */
+            termNfa = unionNFA(termNfa,secondNfa);   // make termNfa equal the union of itself and subNfa
           }
 
         return termNfa;
@@ -142,23 +50,24 @@ public class RE implements REInterface {
 
     /**
      *
-     * @return
+     * @return - an NFA based on a regex term
      */
     private NFA parseTerm() {
-        NFA factorNfa = null;
-        while(more() && peek() != ')' && peek() != '|') {
-            //NFA factNfa = parseFactor();
-            if(factorNfa == null) {
-                factorNfa = parseFactor();
-            } else {    // need to concatenate
-                NFA appendNfa = parseFactor(); // what we're adding on to factorNfa
-                NFA joinedNfa; // where we're storing it all
-                joinedNfa = concatNFA(factorNfa,appendNfa);
+        NFA factorNfa = null;   // create an empty NFA, ensure it's null(fact used later)
 
-                factorNfa = joinedNfa;
+        // while we're still in our same term, keep parsing
+        while(more() && peek() != ')' && peek() != '|') {
+
+            // if factorNfa hasn't been touched, create it and parse the next factor
+            if(factorNfa == null) {
+                factorNfa = parseFactor();  // create an NFA from the factor
+            } else {    // if factorNfa exists, we need to concatenate
+                NFA appendNfa = parseFactor(); // what we're concatenating to factorNfa
+                NFA joinedNfa; // where we're storing it all (i.e. a temporary NFA)
+                joinedNfa = concatNFA(factorNfa,appendNfa); // concatenate our two NFAs
+
+                factorNfa = joinedNfa;  // set NFA equal to the return NFA
             }
-            // TODO: connect nextFactor with factorNfa via e's
-            // put factorNFA together with this?
         }
 
         return factorNfa;
@@ -166,26 +75,28 @@ public class RE implements REInterface {
 
     /**
      *
-     * @return
+     * @return - an NFA built based on a regex factor
      */
     private NFA parseFactor() {
+        NFA baseNFA = parseBase();  // create an NFA by parsing the base of the factor
 
-        NFA baseNFA = parseBase();
-
+        // while we have a '*' operator at the end of our factor, make sure it loops
         while (more() && peek() == '*') {
-            eat('*');
-            Set<State> stateSet = baseNFA.getFinalStates();
-                for(State s: stateSet) {
-                    baseNFA.addTransition(s.getName(), 'e', baseNFA.getStartState().getName());
-//                    transitions.add(s.getName()+'e'+baseNFA.getStartState().getName());
-                    //nfa.addTransition(s.getName(), 'e', baseNFA.getStartState().getName());
-                }
-                NFAState newStart = new NFAState(stateNamer++ + "");
-                baseNFA.addState(newStart.getName());
-                baseNFA.addTransition(newStart.getName(),'e',baseNFA.getStartState().getName());
-                baseNFA.addStartState(newStart.getName());
-                baseNFA.addFinalState(newStart.getName());
+            eat('*');   // get rid of the '*' so we can keep parsing
+            Set<State> stateSet = baseNFA.getFinalStates(); // pull the set of final states from baseNFA
+
+            // for every final state, make a transition back to the start state
+            for(State s: stateSet) {
+                baseNFA.addTransition(s.getName(), 'e', baseNFA.getStartState().getName());
+            }
+
+            NFAState newStart = new NFAState(stateNamer++ + "");    // create a new state (to replace start)
+            baseNFA.addState(newStart.getName());   // add the state to baseNFA
+            baseNFA.addTransition(newStart.getName(),'e',baseNFA.getStartState().getName());    // add trans. to prev. start state
+            baseNFA.addStartState(newStart.getName());  // make new state the start state
+            baseNFA.addFinalState(newStart.getName());  // make the new state a final state also
         }
+
         return baseNFA;
     }
 
@@ -194,55 +105,32 @@ public class RE implements REInterface {
      * make. Also sends individual characters to parseChar, to ensure that
      * they are not inadvertently forgotten in our alphabet.
      *
-     * @return nfa - the nfa to be returned
+     * @return - an NFA made from a base term in the regex
      */
     private NFA parseBase() {
-        NFA baseNfa = new NFA();
+        NFA baseNfa;    // create an NFA
+        baseNfa = new NFA();    // initialize
 
+        // see what's next!
         switch(peek()) {
             case '(':   // we have a regex, not a char
-                eat('(');
-                NFA rNfa = regex();
-                eat(')');
-                baseNfa = rNfa;
+                eat('(');   // get rid of the opening parenthesis
+                NFA rNfa = regex(); // parse the regex into an NFA
+                eat(')');   // upon return, get rid of the closing parenthesis
+                baseNfa = rNfa; // set return NFA equal to rNfa
                 break;
 
-//            case '*':
-//                System.out.println("You hit a " + peek());
-//                break;
+            default:    // it's literally any other possible character
+                NFAState fromState = new NFAState(stateNamer++ + "");   // create a new start state
+                NFAState toState = new NFAState(stateNamer++ + ""); // create a new end state
 
-            default:
-                // TODO: create an NFA for this symbol
-                NFAState fromState = new NFAState(stateNamer++ + "");
-                NFAState toState = new NFAState(stateNamer++ + "");
-
-                baseNfa.addFinalState(toState.getName());
-                //nfa.addFinalState(toState.getName());
-                baseNfa.addStartState(fromState.getName());
-                //nfa.addState(fromState.getName());
-                char c = next();
-                baseNfa.addTransition(fromState.getName(), c, toState.getName());
-                //nfa.addTransition(fromState.getName(), c, toState.getName());
-
-                //return nfa;
+                baseNfa.addFinalState(toState.getName());   // make the end state final
+                baseNfa.addStartState(fromState.getName()); // make the start state a start state
+                baseNfa.addTransition(fromState.getName(), next(), toState.getName());  // transition between the two on the base character
         }
 
         return baseNfa;
     }
-
-    /**
-     * Parses an individual character, i.e., it adds the character to
-     * our alphabet sigma, assuming that the character is not 'e'. Ensures
-     * that our alphabet is no larger than it needs to be (i.e., doesn't
-     * contain 'a' if the language only accepts strings of 'b', and vice-versa)
-     *
-     * @param letter - the character to be added to the alphabet
-     */
-    private void parseChar(Character letter) {
-        if(letter != 'e') {
-            sigma.add(letter);
-        }
-    } // maybe not necessary...
 
     /**
      * Private method to peek ahead in the regular expression, to see what's
@@ -251,7 +139,7 @@ public class RE implements REInterface {
      * @return - the next character in the regular expression
      */
     private char peek() {
-        return regex.charAt(0);
+        return regex.charAt(0); // see what the first character is!
     }
 
     /**
@@ -262,9 +150,9 @@ public class RE implements REInterface {
      * @param c - the character to be consumed, if it is the next character in regex
      */
     private void eat(char c) {
-        if(peek() == c)
-            regex = regex.substring(1);
-        else
+        if(peek() == c) // if the first character is what we're looking for
+            regex = regex.substring(1); // toss it and keep the rest
+        else    // otherwise, throw a runtime exception
             throw new RuntimeException("Expected: " + c + "; got: " + peek());
     }
 
@@ -274,9 +162,9 @@ public class RE implements REInterface {
      * @return - the next character in the regular expression
      */
     private char next() {
-        char c = peek();
-        eat(c);
-        return c;
+        char c = peek();    // see what's next, and save it
+        eat(c); // get rid of whatever it was from regex
+        return c;   // return whatever it was
     }
 
     /**
@@ -286,71 +174,156 @@ public class RE implements REInterface {
      * @return - true or false, whether or not there is still more to go
      */
     private boolean more() {
-        return regex.length() > 0;
+        return regex.length() > 0;  // is there more left?
     }
 
+    /**
+     * Function to concatenate two NFAs together in a user specified order.
+     *
+     * @param startNFA - the first NFA, to which we will concatenate the second
+     * @param endNFA - the second NFA, which will be concatenated onto the first
+     * @return - the concatenated NFA
+     */
     private NFA concatNFA(NFA startNFA, NFA endNFA){
-        System.out.println("SIGMA IS THIS!! " + sigma.toString());
-        NFA concatNFA = new NFA();
-        // TODO: find final states from endNFA, add to concatNFA
-        Set<State> states = endNFA.getFinalStates();
+        NFA concatNFA;  // create a new NFA, in which we will store our data
+        concatNFA = new NFA();  // initialize
+
+        Set<State> states = endNFA.getFinalStates();    // get the final states from the endNFA
+
+        // go through them, and add them all to our concatenation
         for(State s :  states) {
-//            NFAState state = (NFAState)s;
             concatNFA.addFinalState(s.getName());
         }
-        // TODO: find start state from startNFA, add to concatNFA
-        concatNFA.addStartState(startNFA.getStartState().getName());
-        // TODO: find rest states from endNFA, add to concatNFA
-        states = endNFA.getStates();
-        for(State s : states) {
-            concatNFA.addState(s.getName());
-        }
-        // TODO: find rest states from startNFA, add to concatNFA
-        states = startNFA.getStates();
-        for(State s : states) {
-            concatNFA.addState(s.getName());
-        }
-        // TODO: add empty transitions from final states of startNFA to start state of endNFA
-        states = startNFA.getFinalStates();
 
+        concatNFA.addStartState(startNFA.getStartState().getName());    // get the start state from our first NFA, add it to our concat
+        states = endNFA.getStates();    // get our list of states from endNFA
+
+        // for every state in our list, add it to our concatenation
         for(State s : states) {
-            NFAState state = (NFAState)s;
-//            if(!s.getName().equals(concatNFA.getStartState().getName())) {
-                concatNFA.addTransition(s.getName(), 'e', endNFA.getStartState().getName());
-//            }
+            concatNFA.addState(s.getName());
         }
-        // TODO: find all transitions from endNFA, add to concatNFA
-        states = endNFA.getStates();
+
+        states = startNFA.getStates();  // get our list of states from startNFA
+
+        // for every state in our list, add it to our conatenation
+        for(State s : states) {
+            concatNFA.addState(s.getName());
+        }
+
+        states = startNFA.getFinalStates(); // get our final states from startNFA
+
+        // for every state in our list, add a transition between it, and the start state of endNFA, inside
+        // of the concatenation (these start and end states are no longer start and end states here)
+        for(State s : states) {
+                concatNFA.addTransition(s.getName(), 'e', endNFA.getStartState().getName());
+        }
+
+        states = endNFA.getStates();    // get our list of states from endNFA
+
+        // for every state in our list, get its transitions for every character in the alphabet,
+        // and add them to our concatenation. Make sure to include the empty transition
         for(State s : states) {
             NFAState state = (NFAState)s;
             for(char c : endNFA.getABC()){
                 Set<NFAState> toStates = endNFA.getToState(state,c);
-                for(NFAState n : toStates) {
-                    concatNFA.addTransition(s.getName(), c, n.getName());
-                }
+                for(NFAState n : toStates) concatNFA.addTransition(s.getName(), c, n.getName());
             }
+
+            // empty transition
             Set<NFAState> toStates = endNFA.getToState(state, 'e');
-            for(NFAState n : toStates) {
-                concatNFA.addTransition(s.getName(), 'e', n.getName());
-            }
+            for(NFAState n : toStates) concatNFA.addTransition(s.getName(), 'e', n.getName());
+
         }
-        // TODO: find all transitions from startNFA, add to concatNFA
-        states = startNFA.getStates();
+
+        states = startNFA.getStates();  // get our list of states from startNFA
+
+        // for every state in our list, get its transitions for every character in the alphabet,
+        // and add them to our concatenation. Make sure to include the empty transitions
         for(State s : states) {
             NFAState state = (NFAState)s;
             for(char c : startNFA.getABC()){
                 Set<NFAState> toStates = startNFA.getToState(state,c);
-                for(NFAState n : toStates) {
-                    concatNFA.addTransition(s.getName(), c, n.getName());
-                }
+                for(NFAState n : toStates) concatNFA.addTransition(s.getName(), c, n.getName());
             }
+
+            // empty transitions
             Set<NFAState> toStates = startNFA.getToState(state, 'e');
-            for(NFAState n : toStates) {
-                concatNFA.addTransition(s.getName(), 'e', n.getName());
-            }
+            for(NFAState n : toStates) concatNFA.addTransition(s.getName(), 'e', n.getName());
         }
 
-
         return concatNFA;
+    }
+
+    /**
+     * Unions two NFAs into a single NFA, where order isn't particularly important.
+     *
+     * @param firstNFA - the first of the two NFAs to be unioned
+     * @param secondNFA - the second of the two NFAs to be unioned
+     * @return - the unioned NFA
+     */
+    private NFA unionNFA(NFA firstNFA, NFA secondNFA) {
+        NFA unionNFA;   // create a new NFA, into which we will place our union
+        unionNFA = new NFA();   // initialize
+        Set<State> states = firstNFA.getFinalStates();  // get our set of final states from firstNFA
+
+        // for every state in our list, add it as a final state in our union
+        for(State s : states) unionNFA.addFinalState(s.getName());
+
+        states = secondNFA.getFinalStates();    // get our set of final states from secondNFA
+
+        // for every state in our list, add it as a final state in our union
+        for(State s : states) unionNFA.addFinalState(s.getName());
+
+        NFAState startState = new NFAState(stateNamer++ + "");  // create a new state to serve as our start state
+
+        unionNFA.addStartState(startState.getName());   // add the new state as our union start state
+
+        states = firstNFA.getStates();  // get the list of states from firstNFA
+
+        // for each state in our list, add it to the union
+        for(State s : states) unionNFA.addState(s.getName());
+
+        states = secondNFA.getStates(); // get the list of states from secondNFA
+
+        // for each state in our list, add it to the union
+        for(State s : states) unionNFA.addState(s.getName());
+
+        // add an empty transition from our new start state to both of our old start states
+        unionNFA.addTransition(startState.getName(),'e', firstNFA.getStartState().getName());
+        unionNFA.addTransition(startState.getName(),'e', secondNFA.getStartState().getName());
+
+        states = firstNFA.getStates();  // get the list of states from firstNFA again
+
+        // for every state in our list, find all transitions on each character, and add them to our
+        // union. Don't forget to add the empty transitions
+        for(State s : states) {
+            NFAState state = (NFAState)s;
+            for(char c : firstNFA.getABC()){
+                Set<NFAState> toStates = firstNFA.getToState(state,c);
+                for(NFAState n : toStates) unionNFA.addTransition(s.getName(), c, n.getName());
+            }
+
+            // adding the empty transitions
+            Set<NFAState> toStates = firstNFA.getToState(state, 'e');
+            for(NFAState n : toStates) unionNFA.addTransition(s.getName(), 'e', n.getName());
+        }
+
+        states = secondNFA.getStates(); // get the list of states from firstNFA again
+
+        // for every state in our list, find all transitions on each character, and add them to our
+        // union. Don't forget to add the empty transitions
+        for(State s : states) {
+            NFAState state = (NFAState)s;
+            for(char c : secondNFA.getABC()){
+                Set<NFAState> toStates = secondNFA.getToState(state,c);
+                for(NFAState n : toStates) unionNFA.addTransition(s.getName(), c, n.getName());
+            }
+
+            // adding the empty transitions
+            Set<NFAState> toStates = secondNFA.getToState(state, 'e');
+            for(NFAState n : toStates) unionNFA.addTransition(s.getName(), 'e', n.getName());
+        }
+
+        return unionNFA;
     }
 }
