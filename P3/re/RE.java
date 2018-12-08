@@ -32,6 +32,7 @@ public class RE implements REInterface {
      * objects.
      *
      * @param regex - the regular expression to be parsed
+     *
      */
     public RE(String regex){
         this.regex = regex; // save the regular expression
@@ -54,6 +55,7 @@ public class RE implements REInterface {
      * second NFA to create the return NFA.
      *
      * @return - an NFA based on a regular expression
+     *
      */
     private NFA regex(){
         NFA termNfa = parseTerm();  // create an NFA from the next term
@@ -74,6 +76,7 @@ public class RE implements REInterface {
      * then any new NFAs will be concatenated to it through the concatenation funciton.
      *
      * @return - an NFA based on a regex term
+     *
      */
     private NFA parseTerm() {
         NFA factorNfa = null;   // create an empty NFA, ensure it's null(fact used later)
@@ -103,6 +106,7 @@ public class RE implements REInterface {
      * state via empty transitions.
      *
      * @return - an NFA built based on a regex factor
+     *
      */
     private NFA parseFactor() {
         NFA baseNFA = parseBase();  // create an NFA by parsing the base of the factor
@@ -133,27 +137,27 @@ public class RE implements REInterface {
      * they are not inadvertently forgotten in our alphabet.
      *
      * @return - an NFA made from a base term in the regex
+     *
      */
     private NFA parseBase() {
         NFA baseNfa;    // create an NFA
         baseNfa = new NFA();    // initialize
 
         // see what's next!
-        switch(peek()) {
-            case '(':   // we have a regex, not a char
-                eat('(');   // get rid of the opening parenthesis
-                NFA rNfa = regex(); // parse the regex into an NFA
-                eat(')');   // upon return, get rid of the closing parenthesis
-                baseNfa = rNfa; // set return NFA equal to rNfa
-                break;
+        // we have a regex, not a char
+        // it's literally any other possible character
+        if (peek() == '(') {
+            eat('(');   // get rid of the opening parenthesis
+            NFA rNfa = regex(); // parse the regex into an NFA
+            eat(')');   // upon return, get rid of the closing parenthesis
+            baseNfa = rNfa; // set return NFA equal to rNfa
+        } else {
+            NFAState fromState = new NFAState(stateNamer++ + "");   // create a new start state
+            NFAState toState = new NFAState(stateNamer++ + ""); // create a new end state
 
-            default:    // it's literally any other possible character
-                NFAState fromState = new NFAState(stateNamer++ + "");   // create a new start state
-                NFAState toState = new NFAState(stateNamer++ + ""); // create a new end state
-
-                baseNfa.addFinalState(toState.getName());   // make the end state final
-                baseNfa.addStartState(fromState.getName()); // make the start state a start state
-                baseNfa.addTransition(fromState.getName(), next(), toState.getName());  // transition between the two on the base character
+            baseNfa.addFinalState(toState.getName());   // make the end state final
+            baseNfa.addStartState(fromState.getName()); // make the start state a start state
+            baseNfa.addTransition(fromState.getName(), next(), toState.getName());  // transition between the two on the base character
         }
 
         return baseNfa;
@@ -164,6 +168,7 @@ public class RE implements REInterface {
      * coming next
      *
      * @return - the next character in the regular expression
+     *
      */
     private char peek() {
         return regex.charAt(0); // see what the first character is!
@@ -175,6 +180,7 @@ public class RE implements REInterface {
      * will be thrown to alert the user
      *
      * @param c - the character to be consumed, if it is the next character in regex
+     *
      */
     private void eat(char c) {
         if(peek() == c) // if the first character is what we're looking for
@@ -187,6 +193,7 @@ public class RE implements REInterface {
      * returns and consumes the next character in the regular expression
      *
      * @return - the next character in the regular expression
+     *
      */
     private char next() {
         char c = peek();    // see what's next, and save it
@@ -199,6 +206,7 @@ public class RE implements REInterface {
      * come in the regular expression
      *
      * @return - true or false, whether or not there is still more to go
+     *
      */
     private boolean more() {
         return regex.length() > 0;  // is there more left?
@@ -209,7 +217,9 @@ public class RE implements REInterface {
      *
      * @param startNFA - the first NFA, to which we will concatenate the second
      * @param endNFA - the second NFA, which will be concatenated onto the first
+     *
      * @return - the concatenated NFA
+     *
      */
     private NFA concatNFA(NFA startNFA, NFA endNFA){
         NFA concatNFA;  // create a new NFA, in which we will store our data
@@ -232,7 +242,7 @@ public class RE implements REInterface {
 
         states = startNFA.getStates();  // get our list of states from startNFA
 
-        // for every state in our list, add it to our conatenation
+        // for every state in our list, add it to our concatenation
         for(State s : states) {
             concatNFA.addState(s.getName());
         }
@@ -286,7 +296,9 @@ public class RE implements REInterface {
      *
      * @param firstNFA - the first of the two NFAs to be unioned
      * @param secondNFA - the second of the two NFAs to be unioned
+     *
      * @return - the unioned NFA
+     *
      */
     private NFA unionNFA(NFA firstNFA, NFA secondNFA) {
         NFA unionNFA;   // create a new NFA, into which we will place our union
