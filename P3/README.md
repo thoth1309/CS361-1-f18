@@ -12,10 +12,10 @@ This project utilizes a jar file library to provide NFA, DFA, NFAState, DFAState
 ## Compiling and Using
 In order to compile and use this program, you must first make certain that all necessary files are present. The required .java files are as follows:
 	
-	* REDriver.java - the driver class (can be replaced with a different driver, if desired)
-	* RE.java - the file which will parse the regular expression into an NFA
-	* CS361FA.jar	- the FA library
-	* README.md - this file. Not necessary to run, only to understand.
+	- REDriver.java - the driver class (can be replaced with a different driver, if desired)
+	- RE.java - the file which will parse the regular expression into an NFA
+	- CS361FA.jar	- the FA library
+	- README.md - this file. Not necessary to run, only to understand.
 
 Once the presence of these files is confirmed, the project should be compiled from the Onyx command line as follows:
 ```
